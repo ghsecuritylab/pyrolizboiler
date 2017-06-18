@@ -51,6 +51,8 @@
 
 /* Private define ------------------------------------------------------------*/
 
+#define OneWire0_Pin GPIO_PIN_1
+#define OneWire0_GPIO_Port GPIOC
 #define DISPLAY_CS_Pin GPIO_PIN_2
 #define DISPLAY_CS_GPIO_Port GPIOC
 /* USER CODE BEGIN Private defines */

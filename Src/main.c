@@ -48,6 +48,7 @@
 
 /* USER CODE BEGIN Includes */
 #include "u8g_stm32_hal.h"
+#include "tm_stm32_ds18b20.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -240,7 +241,13 @@ static void MX_GPIO_Init(void)
     __HAL_RCC_GPIOA_CLK_ENABLE();
 
     /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(DISPLAY_CS_GPIO_Port, DISPLAY_CS_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DISPLAY_CS_GPIO_Port, DISPLAY_CS_Pin, GPIO_PIN_SET);
+
+    /*Configure GPIO pin : OneWire0_Pin */
+    GPIO_InitStruct.Pin = OneWire0_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    HAL_GPIO_Init(OneWire0_GPIO_Port, &GPIO_InitStruct);
 
     /*Configure GPIO pin : DISPLAY_CS_Pin */
     GPIO_InitStruct.Pin = DISPLAY_CS_Pin;
@@ -254,7 +261,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 u8g_t u8g;
 
-void draw()
+/*void draw()
 {
     //u8g_SetFont(&u8g, u8g_font_5x8);//выбор шрифта
 
@@ -266,9 +273,9 @@ void draw()
 
     u8g_DrawFrame(&u8g, 25,41,20,10);//незаштрихованный прямоугольник
 
-    u8g_DrawCircle(&u8g, 10,58,5,U8G_DRAW_ALL);//нарисовать полную окружность (x,y,radius)
+    u8g_DrawCircle(&u8g, 10,58,5,U8G_DRAW_LOWER_RIGHT);//нарисовать полную окружность (x,y,radius)
 
-    u8g_DrawDisc(&u8g, 30,58,5,U8G_DRAW_ALL); //нарисовать полную окружность заполненyю пикселями
+    u8g_DrawDisc(&u8g, 30,58,5,U8G_DRAW_UPPER_LEFT); //нарисовать полную окружность заполненyю пикселями
     //u8g_DrawDisk(&u8g, x, y, rad, [options])
 
     u8g_DrawEllipse(&u8g,55,46,8,4,U8G_DRAW_ALL);//нарисовать элипс
@@ -293,9 +300,7 @@ void draw()
     u8g_SetFont(&u8g, u8g_font_6x10);
     u8g_DrawStr(&u8g, 2, 34, buff);//выводит текст
 
-
-
-}
+}*/
 /* USER CODE END 4 */
 
 /* StartDefaultTask function */
@@ -306,19 +311,53 @@ void StartDefaultTask(void const * argument)
 
     /* USER CODE BEGIN 5 */
 
+    /* Onewire structure */
+    TM_OneWire_t OW;
+    /* Array for DS18B20 ROM number */
+    uint8_t DS_ROM[8];
+    /* Temperature variable */
+    //float temp;
+
 
     u8g_setSpiIface(&hspi2,DISPLAY_CS_GPIO_Port,DISPLAY_CS_Pin);
     u8g_InitComFn(&u8g, &u8g_dev_st7920_128x64_hw_spi, u8g_com_STM32_hal_hw_fn);
 
 
+    TM_OneWire_Init(&OW, OneWire0_GPIO_Port, OneWire0_Pin);
+
+    uint32_t i = 0;
+
     /* Infinite loop */
     for(;;)
     {
-        //osDelay(100);
+
+        uint8_t ret = 0;
+        if (TM_OneWire_First(&OW)){
+            TM_OneWire_GetFullROM(&OW, DS_ROM);
+            ret = 1;
+        } else ret = 0;
+
+        char buff[45];
+
         u8g_FirstPage(&u8g);
         do
         {
-            draw();
+            u8g_SetFont(&u8g, u8g_font_6x10);//выбор шрифта
+            if (ret) {
+                /* Set LED GREEN */
+                u8g_DrawStr(&u8g, 2, 12, "Find!");//выводит текст
+                sprintf(buff, "%X:%X:%X:%X:%X:%X:%X:%X", DS_ROM[7],DS_ROM[6],DS_ROM[5],DS_ROM[4],DS_ROM[3],DS_ROM[2],DS_ROM[1],DS_ROM[0]);
+                u8g_DrawStr(&u8g, 2, 24, buff);
+
+            }
+            else {
+                /* Set LED RED */
+                u8g_DrawStr(&u8g, 2, 12, "Nothing on line");;
+            }
+
+            sprintf(buff, "%u", i++);
+            u8g_DrawStr(&u8g, 2, 36, buff);
+
         } while ( u8g_NextPage(&u8g) );
 
     }

@@ -57,12 +57,15 @@ include_directories(
 	${MIDDLEWARES_PATH}/ST/STM32_USB_Device_Library/Core/Inc
         ${MIDDLEWARES_PATH}/ST/STM32_USB_Device_Library/Class/CDC/Inc
         ${MIDDLEWARES_PATH}/Third_Party/u8glib
-        ${MIDDLEWARES_PATH}/Third_Party/u8glib/src)
+        ${MIDDLEWARES_PATH}/Third_Party/u8glib/src
+        ${MIDDLEWARES_PATH}/Third_Party/OneWire)
 file(GLOB MIDDLEWARES_EXE_FILES
         ${MIDDLEWARES_PATH}/ST/STM32_USB_Device_Library/Core/Src/*
         ${MIDDLEWARES_PATH}/ST/STM32_USB_Device_Library/Class/CDC/Src/*
         ${MIDDLEWARES_PATH}/Third_Party/u8glib/*.c
-        ${MIDDLEWARES_PATH}/Third_Party/u8glib/src/*.c)
+        ${MIDDLEWARES_PATH}/Third_Party/u8glib/src/*.c
+        ${MIDDLEWARES_PATH}/Third_Party/OneWire/*.c
+        ${MIDDLEWARES_PATH}/Third_Party/OneWire/*.s)
 
 ## freeRTOS
 set(FREERTOS_PATH ${CMAKE_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS)
