@@ -1,21 +1,30 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.7)
 
 ###############################################################################
 ### toolchain
 set(CMAKE_SYSTEM_NAME Generic)
+set(CROSS_NAME arm-none-eabi)
+set(CMAKE_FORCE_C_COMPILER ${CROSS_NAME}-gcc)
+set(CMAKE_FORCE_CXX_COMPILER ${CROSS_NAME}-g++)
+SET(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+set(CMAKE_C_COMPILER ${CROSS_NAME}-gcc)
+set(CMAKE_CXX_COMPILER ${CROSS_NAME}-g++)
 
-#set(CROSS_NAME arm-none-eabi)
 #set(TOOLCHAIN_PATH /opt/gcc-arm-none-eabi-5_4-2016q3)
-set(CROSS_NAME arm-atollic-eabi)
-set(TOOLCHAIN_PATH /opt/Atollic_TrueSTUDIO_for_ARM_7.1.0/ARMTools)
+#set(CROSS_NAME arm-atollic-eabi)
+#set(TOOLCHAIN_PATH /opt/Atollic_TrueSTUDIO_for_ARM_7.1.0/ARMTools)
 
-set(CMAKE_C_COMPILER ${TOOLCHAIN_PATH}/bin/${CROSS_NAME}-gcc)
-set(CMAKE_CXX_COMPILER ${TOOLCHAIN_PATH}/bin/${CROSS_NAME}-g++)
-set(CMAKE_FIND_ROOT_PATH ${TOOLCHAIN_PATH}/${CROSS_NAME})
+#set(CMAKE_C_COMPILER ${TOOLCHAIN_PATH}/bin/${CROSS_NAME}-gcc)
+#set(CMAKE_CXX_COMPILER ${TOOLCHAIN_PATH}/bin/${CROSS_NAME}-g++)
+#set(CMAKE_FIND_ROOT_PATH ${TOOLCHAIN_PATH}/${CROSS_NAME})
+
+#set(CMAKE_FIND_ROOT_PATH /usr/lib/gcc/arm-none-eabi/5.4.1)#/usr/lib/${CROSS_NAME})
+#set(CMAKE_MAKE_PROGRAM make)
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+
 
 ###############################################################################
 ### options
@@ -102,9 +111,9 @@ set_target_properties(${PROJECT_NAME} PROPERTIES LINK_DEPENDS ${LINKER_SCRIPT})
 set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-T${LINKER_SCRIPT} ${LINK_COVERAGE_FLAGS}")
 ## objcopy
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND
-    ${TOOLCHAIN_PATH}/bin/${CROSS_NAME}-objcopy -O ihex ${PROJECT_NAME} ${PROJECT_NAME}.hex)
+    ${CROSS_NAME}-objcopy -O ihex ${PROJECT_NAME} ${PROJECT_NAME}.hex)
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND
-    ${TOOLCHAIN_PATH}/bin/${CROSS_NAME}-size ${PROJECT_NAME})
+    ${CROSS_NAME}-size ${PROJECT_NAME})
 ## program
 #add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND
 #openocd -f interface/stlink-v2.cfg -f target/stm32f4x.cfg -c "init" -c "reset init" -c "flash write_image erase %{CurrentProject:Name}.hex" -c "reset" -c "shutdown" )

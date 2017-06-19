@@ -4,6 +4,11 @@
   * @version        : v1.0_Cube
   * @brief          : This file implements the USB Device descriptors
   ******************************************************************************
+  * This notice applies to any and all portions of this file
+  * that are not between comment pairs USER CODE BEGIN and
+  * USER CODE END. Other portions of this file, whether 
+  * inserted by the user or by software development tools
+  * are owned by their respective copyright owners.
   *
   * Copyright (c) 2017 STMicroelectronics International N.V. 
   * All rights reserved.
@@ -68,12 +73,12 @@
   */ 
 #define USBD_VID     1155
 #define USBD_LANGID_STRING     1033
-#define USBD_MANUFACTURER_STRING     (uint8_t*)"STMicroelectronics"
+#define USBD_MANUFACTURER_STRING     "STMicroelectronics"
 #define USBD_PID_FS     22336
-#define USBD_PRODUCT_STRING_FS     (uint8_t*)"STM32 Virtual ComPort"
-#define USBD_SERIALNUMBER_STRING_FS     (uint8_t*)"00000000001A"
-#define USBD_CONFIGURATION_STRING_FS     (uint8_t*)"CDC Config"
-#define USBD_INTERFACE_STRING_FS     (uint8_t*)"CDC Interface"
+#define USBD_PRODUCT_STRING_FS     "STM32 Virtual ComPort"
+#define USBD_SERIALNUMBER_STRING_FS     "00000000001A"
+#define USBD_CONFIGURATION_STRING_FS     "CDC Config"
+#define USBD_INTERFACE_STRING_FS     "CDC Interface"
 
 #define USB_SIZ_BOS_DESC            0x0C
 
