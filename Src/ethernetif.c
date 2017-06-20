@@ -234,12 +234,12 @@ static void low_level_init(struct netif *netif)
   heth.Instance = ETH;
   heth.Init.AutoNegotiation = ETH_AUTONEGOTIATION_ENABLE;
   heth.Init.PhyAddress = DP83848_PHY_ADDRESS;
-  MACAddr[0] = 0x00;
-  MACAddr[1] = 0x80;
+  MACAddr[0] = 0xFC;
+  MACAddr[1] = 0x84;
   MACAddr[2] = 0xE1;
-  MACAddr[3] = 0x00;
-  MACAddr[4] = 0x00;
-  MACAddr[5] = 0x00;
+  MACAddr[3] = 0x56;
+  MACAddr[4] = 0x07;
+  MACAddr[5] = 0x81;
   heth.Init.MACAddr = &MACAddr[0];
   heth.Init.RxMode = ETH_RXINTERRUPT_MODE;
   heth.Init.ChecksumMode = ETH_CHECKSUM_BY_HARDWARE;
@@ -622,6 +622,40 @@ u32_t sys_now(void)
 }
 
 /* USER CODE END 6 */
+
+/**
+  * @brief  This function sets the netif link status.
+  * @param  netif: the network interface
+  * @retval None
+  */  
+void ethernetif_set_link(void const *argument)
+{
+  uint32_t regvalue = 0;
+  struct link_str *link_arg = (struct link_str *)argument;
+  
+  for(;;)
+  {
+    /* Read PHY_BSR*/
+    HAL_ETH_ReadPHYRegister(&heth, PHY_BSR, &regvalue);
+    
+    regvalue &= PHY_LINKED_STATUS;
+    
+    /* Check whether the netif link down and the PHY link is up */
+    if(!netif_is_link_up(link_arg->netif) && (regvalue))
+    {
+      /* network cable is connected */ 
+      netif_set_link_up(link_arg->netif);        
+    }
+    else if(netif_is_link_up(link_arg->netif) && (!regvalue))
+    {
+      /* network cable is dis-connected */
+      netif_set_link_down(link_arg->netif);
+    }
+    
+    /* Suspend thread for 200 ms */
+    osDelay(200);
+  }
+}
 
 /* USER CODE BEGIN 7 */
 

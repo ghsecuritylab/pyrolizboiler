@@ -88,6 +88,20 @@ file(GLOB FREERTOS_EXE_FILES
         ${FREERTOS_PATH}/Source/portable/GCC/ARM_CM4F/*
         ${FREERTOS_PATH}/Source/portable/MemMang/*)
 
+## LwIP
+set(LWIP_PATH ${CMAKE_SOURCE_DIR}/Middlewares/Third_Party/LwIP)
+include_directories(
+        ${LWIP_PATH}/src/include
+        ${LWIP_PATH}/system)
+file(GLOB LWIP_EXE_FILES
+        ${LWIP_PATH}/system/OS/*.c
+        ${LWIP_PATH}/src/netif/ppp/*.c
+        ${LWIP_PATH}/src/netif/*.c
+        ${LWIP_PATH}/src/core/*.c
+        ${LWIP_PATH}/src/core/ipv4/*.c
+        ${LWIP_PATH}/src/core/ipv6/*.c
+        ${LWIP_PATH}/src/api/*.c)
+
 ## drivers files
 set(DRIVERS_PATH ${CMAKE_SOURCE_DIR}/Drivers)
 include_directories(
@@ -106,7 +120,13 @@ set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/STM32F407VG_FLASH.ld)
 ###############################################################################
 ### target
 ## executable
-add_executable(${PROJECT_NAME} ${EXE_FILES} ${DRIVERS_EXE_FILES} ${MIDDLEWARES_EXE_FILES} ${FREERTOS_EXE_FILES})
+add_executable(${PROJECT_NAME}
+    ${EXE_FILES}
+    ${DRIVERS_EXE_FILES}
+    ${MIDDLEWARES_EXE_FILES}
+    ${LWIP_EXE_FILES}
+    ${FREERTOS_EXE_FILES} )
+
 set_target_properties(${PROJECT_NAME} PROPERTIES LINK_DEPENDS ${LINKER_SCRIPT})
 set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-T${LINKER_SCRIPT} ${LINK_COVERAGE_FLAGS}")
 ## objcopy
