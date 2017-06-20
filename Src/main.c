@@ -64,7 +64,7 @@ osThreadId defaultTaskHandle;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+u8g_t u8g;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -75,7 +75,7 @@ void StartDefaultTask(void const * argument);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-
+extern struct netif gnetif;
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -283,7 +283,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-u8g_t u8g;
+
 /*
 void draw()
 {
@@ -393,8 +393,14 @@ void StartDefaultTask(void const * argument)
                 u8g_DrawStr(&u8g, 2, 12, "Nothing on line");;
             }
 
-            sprintf(buff, "%lu", i);
+
+            sprintf(buff, "Stat: %d %d %d %d  %lu",
+                    (gnetif.flags&0x8)>>3, (gnetif.flags&0x4)>>2,
+                    (gnetif.flags&0x2)>>1, gnetif.flags&0x1, i);
             u8g_DrawStr(&u8g, 2, 36, buff);
+
+            sprintf(buff, "ip: %d.%d.%d.%d", ip4_addr1(&gnetif.ip_addr), ip4_addr2(&gnetif.ip_addr), ip4_addr3(&gnetif.ip_addr), ip4_addr4(&gnetif.ip_addr));
+            u8g_DrawStr(&u8g, 2, 48, buff);
             //            draw();
 
         } while ( u8g_NextPage(&u8g) );

@@ -156,7 +156,7 @@ void HAL_ETH_MspInit(ETH_HandleTypeDef* ethHandle)
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     /* Peripheral interrupt init */
-    HAL_NVIC_SetPriority(ETH_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(ETH_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(ETH_IRQn);
   /* USER CODE BEGIN ETH_MspInit 1 */
 
@@ -607,7 +607,7 @@ err_t ethernetif_init(struct netif *netif)
 */
 u32_t sys_jiffies(void)
 {
-  return HAL_GetTick();
+    return HAL_GetTick();
 }
 
 /**
@@ -618,7 +618,7 @@ u32_t sys_jiffies(void)
 */
 u32_t sys_now(void)
 {
-  return HAL_GetTick();
+    return HAL_GetTick();
 }
 
 /* USER CODE END 6 */
@@ -758,10 +758,11 @@ void ethernetif_update_config(struct netif *netif)
   */
 __weak void ethernetif_notify_conn_changed(struct netif *netif)
 {
-  /* NOTE : This is function could be implemented in user file 
+    /* NOTE : This is function could be implemented in user file
             when the callback is needed,
   */
-
+    if(netif_is_link_up(netif)) HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET);
+    else HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
 }
 /* USER CODE END 8 */ 
 #endif /* LWIP_NETIF_LINK_CALLBACK */
