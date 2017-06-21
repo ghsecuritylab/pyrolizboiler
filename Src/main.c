@@ -382,11 +382,10 @@ void StartDefaultTask(void const * argument)
 
             u8g_SetFont(&u8g, u8g_font_6x10);//выбор шрифта
             if (ret) {
-                u8g_DrawStr(&u8g, 2, 12, "Find!");//выводит текст
                 sprintf(buff, "%X:%X:%X:%X:%X:%X:%X:%X", DS_ROM[7],DS_ROM[6],DS_ROM[5],DS_ROM[4],DS_ROM[3],DS_ROM[2],DS_ROM[1],DS_ROM[0]);
-                u8g_DrawStr(&u8g, 2, 24, buff);
+                u8g_DrawStr(&u8g, 2, 12, buff);
                 sprintf(buff, "Temp is: %ld,%02ld`C", (int32_t)temp, ((int32_t)(temp*100)%100));
-                u8g_DrawStr(&u8g, 2, 48, buff);
+                u8g_DrawStr(&u8g, 2, 24, buff);
 
             }
             else {
