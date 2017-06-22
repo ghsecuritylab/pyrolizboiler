@@ -55,27 +55,32 @@
 /* USER CODE BEGIN Includes */
 #include "u8g_stm32_hal.h"
 #include "tm_stm32_ds18b20.h"
+#include "max31855_stm32_hal.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
 SPI_HandleTypeDef hspi2;
+SPI_HandleTypeDef hspi3;
 
 osThreadId defaultTaskHandle;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 u8g_t u8g;
+extern struct netif gnetif;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_SPI2_Init(void);
+static void MX_SPI3_Init(void);
 void StartDefaultTask(void const * argument);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-extern struct netif gnetif;
+void max_tc_init();
+
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -108,9 +113,10 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_SPI2_Init();
+  MX_SPI3_Init();
 
   /* USER CODE BEGIN 2 */
-
+    max_tc_init();
   /* USER CODE END 2 */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -223,12 +229,35 @@ static void MX_SPI2_Init(void)
   hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi2.Init.CLKPhase = SPI_PHASE_2EDGE;
   hspi2.Init.NSS = SPI_NSS_SOFT;
-  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
   hspi2.Init.CRCPolynomial = 10;
   if (HAL_SPI_Init(&hspi2) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+}
+
+/* SPI3 init function */
+static void MX_SPI3_Init(void)
+{
+
+  hspi3.Instance = SPI3;
+  hspi3.Init.Mode = SPI_MODE_MASTER;
+  hspi3.Init.Direction = SPI_DIRECTION_2LINES_RXONLY;
+  hspi3.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi3.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi3.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi3.Init.NSS = SPI_NSS_SOFT;
+  hspi3.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_128;
+  hspi3.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi3.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi3.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi3.Init.CRCPolynomial = 10;
+  if (HAL_SPI_Init(&hspi3) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
@@ -260,18 +289,21 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, LED_GREEN_Pin|LED_ORANGE_Pin|LED_RED_Pin|LED_BLUE_Pin, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(CS_MAX31855_GPIO_Port, CS_MAX31855_Pin, GPIO_PIN_SET);
+
   /*Configure GPIO pin : OneWire0_Pin */
   GPIO_InitStruct.Pin = OneWire0_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(OneWire0_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : DISPLAY_CS_Pin */
-  GPIO_InitStruct.Pin = DISPLAY_CS_Pin;
+  /*Configure GPIO pins : DISPLAY_CS_Pin CS_MAX31855_Pin */
+  GPIO_InitStruct.Pin = DISPLAY_CS_Pin|CS_MAX31855_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  HAL_GPIO_Init(DISPLAY_CS_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LED_GREEN_Pin LED_ORANGE_Pin LED_RED_Pin LED_BLUE_Pin */
   GPIO_InitStruct.Pin = LED_GREEN_Pin|LED_ORANGE_Pin|LED_RED_Pin|LED_BLUE_Pin;
@@ -283,6 +315,21 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+max31855_h maxtc;
+
+void max_tc_init()
+{
+    maxtc.hspi = &hspi3;
+    maxtc.CS_port = CS_MAX31855_GPIO_Port;
+    maxtc.CS_pin = CS_MAX31855_Pin;
+    max31855_init(&maxtc);
+}
+
+void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
+{
+  if(hspi == maxtc.hspi)
+      max31855_recvd_handler(&maxtc);
+}
 
 /*
 void draw()
@@ -393,14 +440,20 @@ void StartDefaultTask(void const * argument)
             }
 
 
-            sprintf(buff, "Stat: %d %d %d %d  %lu",
+            sprintf(buff, "Stat: %d %d %d %d",
                     (gnetif.flags&0x8)>>3, (gnetif.flags&0x4)>>2,
-                    (gnetif.flags&0x2)>>1, gnetif.flags&0x1, i);
+                    (gnetif.flags&0x2)>>1, gnetif.flags&0x1);
             u8g_DrawStr(&u8g, 2, 36, buff);
+
+            sprintf(buff, "%lu", i);
+            u8g_DrawStr90(&u8g, 115, 18, buff);
 
             sprintf(buff, "ip: %d.%d.%d.%d", ip4_addr1(&gnetif.ip_addr), ip4_addr2(&gnetif.ip_addr), ip4_addr3(&gnetif.ip_addr), ip4_addr4(&gnetif.ip_addr));
             u8g_DrawStr(&u8g, 2, 48, buff);
-            //            draw();
+
+            sprintf(buff, "slf: %d tc: %d er:%X", (uint16_t)max31855_getSelfTemp(&maxtc),
+                    (uint16_t)max31855_getTemp(&maxtc), maxtc.err);
+            u8g_DrawStr(&u8g, 2, 60, buff);
 
         } while ( u8g_NextPage(&u8g) );
 

@@ -68,6 +68,8 @@
 #define LED_RED_GPIO_Port GPIOD
 #define LED_BLUE_Pin GPIO_PIN_15
 #define LED_BLUE_GPIO_Port GPIOD
+#define CS_MAX31855_Pin GPIO_PIN_12
+#define CS_MAX31855_GPIO_Port GPIOC
 
 /* USER CODE BEGIN Private defines */
 
