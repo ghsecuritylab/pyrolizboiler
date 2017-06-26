@@ -451,9 +451,18 @@ void StartDefaultTask(void const * argument)
             sprintf(buff, "ip: %d.%d.%d.%d", ip4_addr1(&gnetif.ip_addr), ip4_addr2(&gnetif.ip_addr), ip4_addr3(&gnetif.ip_addr), ip4_addr4(&gnetif.ip_addr));
             u8g_DrawStr(&u8g, 2, 48, buff);
 
-            sprintf(buff, "slf: %d tc: %d er:%X", (uint16_t)max31855_getSelfTemp(&maxtc),
-                    (uint16_t)max31855_getTemp(&maxtc), maxtc.err);
-            u8g_DrawStr(&u8g, 2, 60, buff);
+            sprintf(buff, "er: %d%d%d%d", maxtc.err>>3&0x1, maxtc.err>>2&0x1,
+                    maxtc.err>>1&0x1, maxtc.err&0x1);
+            u8g_DrawStr(&u8g, 70, 60, buff);
+
+            u8g_SetFont(&u8g, u8g_font_4x6);//выбор шрифта
+
+            sprintf(buff, "slf: %d", (uint16_t)max31855_getSelfTemp(&maxtc));
+            u8g_DrawStr(&u8g, 2, 56, buff);
+
+            sprintf(buff, "tc:  %d", (uint16_t)max31855_getTemp(&maxtc));
+            u8g_DrawStr(&u8g, 2, 62, buff);
+
 
         } while ( u8g_NextPage(&u8g) );
 
