@@ -118,6 +118,9 @@ file(GLOB DRIVERS_EXE_FILES
         ${DRIVERS_PATH}/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c
         ${CMAKE_SOURCE_DIR}/startup/startup_stm32f407xx.s)
 
+## http filesystem file
+include_directories(${CMAKE_SOURCE_DIR}/httpfs)
+
 ## linker script file
 set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/STM32F407VG_FLASH.ld)
 
@@ -131,8 +134,19 @@ add_executable(${PROJECT_NAME}
     ${LWIP_EXE_FILES}
     ${FREERTOS_EXE_FILES} )
 
+## build http filesystem
+add_custom_target( fsdata #TARGET ${PROJECT_NAME} PRE_BUILD
+    COMMAND ${CMAKE_SOURCE_DIR}/makefsdata
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/httpfs
+    COMMENT "Make HTTP filesystem"
+    BYPRODUCTS ${CMAKE_SOURCE_DIR}/httpfs/fsdata.c
+    DEPENDS ${CMAKE_SOURCE_DIR}/httpfs/*)
+add_dependencies(${PROJECT_NAME} fsdata)
+
+##linking
 set_target_properties(${PROJECT_NAME} PROPERTIES LINK_DEPENDS ${LINKER_SCRIPT})
 set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-T${LINKER_SCRIPT} ${LINK_COVERAGE_FLAGS}")
+
 ## objcopy
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND
     ${CROSS_NAME}-objcopy -O ihex ${PROJECT_NAME} ${PROJECT_NAME}.hex)

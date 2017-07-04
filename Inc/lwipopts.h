@@ -146,7 +146,6 @@
 /*-----------------------------------------------------------------------------*/
 /* USER CODE BEGIN 1 */
 #define LWIP_TIMEVAL_PRIVATE        0
-#define HTTPD_USE_CUSTOM_FSDATA     1
 #define LWIP_HTTPD_CGI              1
 /* USER CODE END 1 */
 
