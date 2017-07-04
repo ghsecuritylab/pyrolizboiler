@@ -142,13 +142,15 @@ add_executable(${PROJECT_NAME}
     ${LOGIC_EXE_FILES})
 
 ## build http filesystem
-file(GLOB_RECURSE fsdata_files RELATIVE ${CMAKE_SOURCE_DIR}/httpfs ${CMAKE_SOURCE_DIR}/httpfs/*)
+file(GLOB_RECURSE fsdata_files RELATIVE ${CMAKE_SOURCE_DIR}/httpfs  #/src
+    ${CMAKE_SOURCE_DIR}/httpfs/*) #src/
 list(REMOVE_ITEM fsdata_files "fsdata.c")
 add_custom_target( fsdata
-    COMMAND ${CMAKE_SOURCE_DIR}/makefsdata
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/httpfs
+    COMMAND ${CMAKE_SOURCE_DIR}/makefsdata #${CMAKE_SOURCE_DIR}/httpfs/src/
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/httpfs/
     COMMENT "Make HTTP filesystem from: ${fsdata_files}"
-    BYPRODUCTS ${CMAKE_SOURCE_DIR}/httpfs/fsdata.c)
+    BYPRODUCTS ${CMAKE_SOURCE_DIR}/httpfs/fsdata.c )
+    #DEPENDS ${CMAKE_SOURCE_DIR}/httpfs/src)
 add_dependencies(${PROJECT_NAME} fsdata)
 
 ##linking

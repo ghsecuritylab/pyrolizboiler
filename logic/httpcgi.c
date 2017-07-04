@@ -12,7 +12,7 @@ static const char* cgi_handler(int iIndex,
 
 void initHttpCgiServer()
 {
-    tCGI cgih = {"/leds.cgi", cgi_handler};
+    tCGI cgih = {"leds.cgi", cgi_handler};
     http_set_cgi_handlers(&cgih, 1);
 
     httpd_init();
