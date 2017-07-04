@@ -355,7 +355,7 @@ void StartDefaultTask(void const * argument)
 
     u8g_setSpiIface(&hspi2,DISPLAY_CS_GPIO_Port,DISPLAY_CS_Pin);
     u8g_InitComFn(&u8g, &u8g_dev_st7920_128x64_hw_spi, u8g_com_STM32_hal_hw_fn);
-
+    u8g_SetRot180(&u8g);
 
     TM_OneWire_Init(&OW, OneWire0_GPIO_Port, OneWire0_Pin);
 
