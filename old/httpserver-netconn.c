@@ -262,7 +262,7 @@ static void http_server_netconn_thread(void *arg)
   if (conn!= NULL)
   {
     /* Bind to port 80 (HTTP) with default IP address */
-    err = netconn_bind(conn, NULL, 80);
+    err = netconn_bind(conn, NULL, 8080);
     
     if (err == ERR_OK)
     {
@@ -293,6 +293,7 @@ static void http_server_netconn_thread(void *arg)
   */
 void http_server_netconn_init()
 {
+
   sys_thread_new("HTTP", http_server_netconn_thread, NULL, DEFAULT_THREAD_STACKSIZE, WEBSERVER_THREAD_PRIO);
 }
 
@@ -304,24 +305,27 @@ void http_server_netconn_init()
   */
 void DynWebPage(struct netconn *conn)
 {
-  portCHAR PAGE_BODY[512];
-  portCHAR pagehits[10] = {0};
-
-  memset(PAGE_BODY, 0,512);
+  portCHAR * page_body = malloc(sizeof(portCHAR)*4000);
+  *page_body = 0;
 
   /* Update the hit count */
-  nPageHits++;
-  sprintf(pagehits, "%d", (int)nPageHits);
-  strcat(PAGE_BODY, pagehits);
-  strcat((char *)PAGE_BODY, "<pre><br>Name          State  Priority  Stack   Num" );
-  strcat((char *)PAGE_BODY, "<br>---------------------------------------------<br>");
+  sprintf(page_body, "Hits: %d", (int)nPageHits++);
+  strcat((char *)page_body, "<pre><br>Name          State  Priority  Stack   Num<br>" );
+  strcat((char *)page_body, "<br>----------------------------------------------------<br>");
     
   /* The list of tasks and their status */
-  osThreadList((unsigned char *)(PAGE_BODY + strlen(PAGE_BODY)));
-  strcat((char *)PAGE_BODY, "<br><br>---------------------------------------------");
-  strcat((char *)PAGE_BODY, "<br>B : Blocked, R : Ready, D : Deleted, S : Suspended<br>");
+  osThreadList((unsigned char *)(page_body + strlen(page_body)));
+  strcat((char *)page_body, "<br>----------------------------------------------------<br>");
+  strcat((char *)page_body, "B : Blocked, R : Ready, D : Deleted, S : Suspended<br><br>");
+
+  strcat((char *)page_body, "<br>----------------------------------------------------<br>");
+  vTaskGetRunTimeStats((char *)(page_body+strlen(page_body)));
+  strcat((char *)page_body, "<br>----------------------------------------------------<br>");
+  strcat((char *)page_body, "</pre></span></small></body></html>\r\n\r\n");
 
   /* Send the dynamically generated page */
   netconn_write(conn, PAGE_START, strlen((char*)PAGE_START), NETCONN_COPY);
-  netconn_write(conn, PAGE_BODY, strlen(PAGE_BODY), NETCONN_COPY);
+  netconn_write(conn, page_body, strlen(page_body), NETCONN_COPY);
+
+  free(page_body);
 }

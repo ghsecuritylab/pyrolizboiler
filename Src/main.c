@@ -57,7 +57,7 @@
 #include "tm_stm32_ds18b20.h"
 #include "max31855_stm32_hal.h"
 #include "server.h"
-#include "httpserver-netconn.h"
+#include "lwip/apps/httpd.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -362,7 +362,7 @@ void StartDefaultTask(void const * argument)
 
     //    struct tcp_pcb * server =
     initServer(1500);
-    http_server_netconn_init();
+    httpd_init();
 
     uint32_t i = 0;
 

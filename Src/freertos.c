@@ -51,13 +51,13 @@
 #include "task.h"
 
 /* USER CODE BEGIN Includes */     
-
+#include "stm32f4xx_hal.h"
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
 
 /* USER CODE BEGIN Variables */
-
+TIM_HandleTypeDef htim14;
 /* USER CODE END Variables */
 
 /* Function prototypes -------------------------------------------------------*/
@@ -66,7 +66,48 @@
 
 /* USER CODE END FunctionPrototypes */
 
+/* GetIdleTaskMemory prototype (linked to static allocation support) */
+void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize );
+
 /* Hook prototypes */
+void configureTimerForRunTimeStats(void);
+unsigned long getRunTimeCounterValue(void);
+
+/* USER CODE BEGIN 1 */
+/* Functions needed when configGENERATE_RUN_TIME_STATS is on */
+//__weak
+void configureTimerForRunTimeStats(void)
+{
+    __HAL_RCC_TIM14_CLK_ENABLE();
+
+    htim14.Instance = TIM14;
+    htim14.Init.Prescaler = 84;
+    htim14.Init.CounterMode = TIM_COUNTERMODE_UP;
+    htim14.Init.Period = 0xffff;
+    htim14.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+    HAL_TIM_Base_Init(&htim14);
+    HAL_TIM_Base_Start(&htim14);
+}
+
+//__weak
+unsigned long getRunTimeCounterValue(void)
+{
+    return __HAL_TIM_GET_COUNTER(&htim14);
+}
+/* USER CODE END 1 */
+
+/* USER CODE BEGIN GET_IDLE_TASK_MEMORY */
+static StaticTask_t xIdleTaskTCBBuffer;
+static StackType_t xIdleStack[configMINIMAL_STACK_SIZE];
+  
+void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize )
+{
+  *ppxIdleTaskTCBBuffer = &xIdleTaskTCBBuffer;
+  *ppxIdleTaskStackBuffer = &xIdleStack[0];
+  *pulIdleTaskStackSize = configMINIMAL_STACK_SIZE;
+  /* place for user code */
+}                   
+/* USER CODE END GET_IDLE_TASK_MEMORY */
 
 /* USER CODE BEGIN Application */
      
