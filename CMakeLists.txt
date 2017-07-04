@@ -118,6 +118,12 @@ file(GLOB DRIVERS_EXE_FILES
         ${DRIVERS_PATH}/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c
         ${CMAKE_SOURCE_DIR}/startup/startup_stm32f407xx.s)
 
+## main logic files
+include_directories(${CMAKE_SOURCE_DIR}/logic)
+file(GLOB LOGIC_EXE_FILES
+        ${CMAKE_SOURCE_DIR}/logic/*.c
+        ${CMAKE_SOURCE_DIR}/logic/*.cpp)
+
 ## http filesystem file
 include_directories(${CMAKE_SOURCE_DIR}/httpfs)
 
@@ -132,7 +138,8 @@ add_executable(${PROJECT_NAME}
     ${DRIVERS_EXE_FILES}
     ${MIDDLEWARES_EXE_FILES}
     ${LWIP_EXE_FILES}
-    ${FREERTOS_EXE_FILES} )
+    ${FREERTOS_EXE_FILES}
+    ${LOGIC_EXE_FILES})
 
 ## build http filesystem
 file(GLOB_RECURSE fsdata_files RELATIVE ${CMAKE_SOURCE_DIR}/httpfs ${CMAKE_SOURCE_DIR}/httpfs/*)

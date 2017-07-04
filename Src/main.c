@@ -56,8 +56,7 @@
 #include "u8g_stm32_hal.h"
 #include "tm_stm32_ds18b20.h"
 #include "max31855_stm32_hal.h"
-#include "server.h"
-#include "lwip/apps/httpd.h"
+#include "httpcgi.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -361,8 +360,8 @@ void StartDefaultTask(void const * argument)
     TM_OneWire_Init(&OW, OneWire0_GPIO_Port, OneWire0_Pin);
 
     //    struct tcp_pcb * server =
-    initServer(1500);
-    httpd_init();
+    //initServer(1500);
+    initHttpCgiServer();
 
     uint32_t i = 0;
 
