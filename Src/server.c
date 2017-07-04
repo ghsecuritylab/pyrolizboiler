@@ -33,34 +33,15 @@ struct tcp_pcb * initServer(uint16_t port)
 static err_t srv_conn_accepted(void *arg, struct tcp_pcb *newpcb, err_t err)
 {
 
-//    struct tcp_echoserver_struct * eserv =
-//            (struct tcp_echoserver_struct *)
-//                    mem_malloc(sizeof(struct tcp_echoserver_struct));
-
-//    if(eserv != NULL)
-//    {
-//        eserv->state = ES_ACCEPTED;
-//        eserv->pcb = newpcb;
-//        eserv->retries = 0;
-//        eserv->p = NULL;
-
-//        tcp_arg(newpcb, eserv);
-        tcp_recv(newpcb, srv_conn_recv);
-        tcp_err(newpcb, srv_conn_err);
-
-
-//    }
-//    else{
-//        srv_conn_close(newpcb, eserv);
-//        return ERR_MEM;
-//    }
-
+    tcp_recv(newpcb, srv_conn_recv);
+    tcp_err(newpcb, srv_conn_err);
 
     char *string = "{\"hop\": 0}";
     if(err == ERR_OK)
     {
         tcp_write(newpcb, string, strlen(string), 0);
         tcp_output(newpcb);
+        tcp_accepted(newpcb);
     }
 
     return err;
@@ -78,6 +59,8 @@ static err_t srv_conn_recv(void *arg, struct tcp_pcb *newpcb, struct pbuf *p, er
     {
         tcp_write(newpcb, p->payload, p->len, 0);
         tcp_output(newpcb);
+        tcp_recved(newpcb, p->tot_len);
+        pbuf_free(p);
     }
     return err;
 }

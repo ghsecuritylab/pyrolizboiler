@@ -94,7 +94,8 @@ file(GLOB FREERTOS_EXE_FILES
 set(LWIP_PATH ${CMAKE_SOURCE_DIR}/Middlewares/Third_Party/LwIP)
 include_directories(
         ${LWIP_PATH}/src/include
-        ${LWIP_PATH}/system)
+        ${LWIP_PATH}/system
+        ${LWIP_PATH}/src/apps/httpd)
 file(GLOB LWIP_EXE_FILES
         ${LWIP_PATH}/system/OS/*.c
         ${LWIP_PATH}/src/netif/ppp/*.c
@@ -102,7 +103,8 @@ file(GLOB LWIP_EXE_FILES
         ${LWIP_PATH}/src/core/*.c
         ${LWIP_PATH}/src/core/ipv4/*.c
         ${LWIP_PATH}/src/core/ipv6/*.c
-        ${LWIP_PATH}/src/api/*.c)
+        ${LWIP_PATH}/src/api/*.c
+        ${LWIP_PATH}/src/apps/httpd/*.c)
 
 ## drivers files
 set(DRIVERS_PATH ${CMAKE_SOURCE_DIR}/Drivers)
