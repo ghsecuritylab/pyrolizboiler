@@ -10,9 +10,11 @@ static const char* cgi_handler(int iIndex,
     return "/index.html";
 }
 
+tCGI cgih = {"/leds.cgi", cgi_handler};
+
 void initHttpCgiServer()
 {
-    tCGI cgih = {"leds.cgi", cgi_handler};
+
     http_set_cgi_handlers(&cgih, 1);
 
     httpd_init();
