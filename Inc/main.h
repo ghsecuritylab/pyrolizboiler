@@ -56,6 +56,14 @@
 
 /* Private define ------------------------------------------------------------*/
 
+#define Relay0_Pin GPIO_PIN_2
+#define Relay0_GPIO_Port GPIOE
+#define Relay1_Pin GPIO_PIN_3
+#define Relay1_GPIO_Port GPIOE
+#define Relay2_Pin GPIO_PIN_4
+#define Relay2_GPIO_Port GPIOE
+#define Relay3_Pin GPIO_PIN_5
+#define Relay3_GPIO_Port GPIOE
 #define OneWire0_Pin GPIO_PIN_0
 #define OneWire0_GPIO_Port GPIOC
 #define DISPLAY_CS_Pin GPIO_PIN_2

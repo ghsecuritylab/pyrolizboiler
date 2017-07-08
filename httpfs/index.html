@@ -18,31 +18,11 @@
 			rqst.open("GET", filename, true);
 			rqst.send();
 		};
-		function setServo(serv, value){ httpGet("servo", serv, value);};
+		function setServo(serv, value){ 
+			document.getElementById(serv).value = value;
+			httpGet("servo", serv, value);};
 		function setLed(elem) {httpGet("leds", elem.name, elem.value);};
-		
-		/*{			
-			var filename = "/leds"
-			filename += "?"
-			filename += elem.name
-			filename += "="
-			filename += elem.value
-			
-			var rqst = new XMLHttpRequest();
-			rqst.open("GET", filename, true);
-			rqst.send();
-			
-			
-			var rqst = new XMLHttpRequest();
-			var data = new FormData();
-			
-			data.append(elem.name, elem.value);
-			
-			console.log("name:  " + elem.name + "  value: " + elem.value);
-			
-			rqst.open("POST", "/leds.cgi", true);
-			rqst.send(data);
-		}*/
+		function setRelay(num, stat) {httpGet("relay", num, stat);};
 	</script>
 </HEAD>
 <BODY>
@@ -53,41 +33,72 @@
 <tr>
 <td>
 <B><font color="green">LED1 ON</font></B>
-<INPUT type="button" name="led1" value="1" size=2 onclick="setLed(this)">
+<input type="button" name="led1" value="1" size=2 onclick="setLed(this)">
 </td>
 <td>
 <B><font color="red">LED2 ON</font></B>
-<INPUT type="button" name="led2" value="1" size=2 onclick="setLed(this)">
+<input type="button" name="led2" value="1" size=2 onclick="setLed(this)">
 </td>
 <td>
 <B><font color="blue">LED3 ON</font></B>
-<INPUT type="button" name="led3" value="1" size=2 onclick="setLed(this)">
+<input type="button" name="led3" value="1" size=2 onclick="setLed(this)">
 </td>
 <td>
 <B><font color="broun">LED4 ON</font></B>
-<INPUT type="button" name="led4" value="1" size=2 onclick="setLed(this)">
+<input type="button" name="led4" value="1" size=2 onclick="setLed(this)">
 </td>
 </tr>
 <tr>
 <td>
-<INPUT type="button" name="led10" value="0" size=2 onclick="setLed(this)">
+<input type="button" name="led10" value="0" size=2 onclick="setLed(this)">
 </td>
 <td>
-<INPUT type="button" name="led20" value="0" size=2 onclick="setLed(this)">
+<input type="button" name="led20" value="0" size=2 onclick="setLed(this)">
 </td>
 <td>
-<INPUT type="button" name="led30" value="0" size=2 onclick="setLed(this)">
+<input type="button" name="led30" value="0" size=2 onclick="setLed(this)">
 </td>
 <td>
-<INPUT type="button" name="led40" value="0" size=2 onclick="setLed(this)">
+<input type="button" name="led40" value="0" size=2 onclick="setLed(this)">
 </td>
 </tr>
 </table>
-	<div width="350">
-		<input type="range" min="0" max="180" name="pwm0" oninput="setServo(this.name, this.value)"><p>
-		<input type="range" min="0" max="180" name="pwm1" oninput="setServo(this.name, this.value)"><p>
-		<input type="range" min="0" max="180" name="pwm2" oninput="setServo(this.name, this.value)"><p>
-	</div>
+	<table>
+		<tr>
+			<td><b>Servo 1: </b></td>
+			<td><input type="range" min="0" max="180" name="pwm0" oninput="setServo(this.name, this.value)"></td>
+			<td><textarea id="pwm0" readOnly="true"></textarea></td>
+		</tr>
+		<tr>
+			<td><b>Servo 2: </b></td>
+			<td><input type="range" min="0" max="180" name="pwm1" oninput="setServo(this.name, this.value)"></td>
+			<td><textarea id="pwm1" readOnly="true"></textarea></td>
+		</tr>
+		<tr>
+			<td><b>Servo 3: </b></td>
+			<td><input type="range" min="0" max="180" name="pwm2" oninput="setServo(this.name, this.value)"></td>
+			<td><textarea id="pwm2" readOnly="true"></textarea></td>
+		</tr>
+	</table>
+	
+	<table>
+		<tr>
+			<td><b>First: </b></td>
+			<td><input type="checkbox" onclick="setRelay('relay0', this.checked)"></td>
+		</tr>
+		<tr>
+			<td><b>Second: </b></td>
+			<td><input type="checkbox" onclick="setRelay('relay1', this.checked)"></td>
+		</tr>
+		<tr>
+			<td><b>Third: </b></td>
+			<td><input type="checkbox" onclick="setRelay('relay2', this.checked)"></td>
+		</tr>
+		<tr>
+			<td><b>Fourth: </b></td>
+			<td><input type="checkbox" onclick="setRelay('relay3', this.checked)"></td>
+		</tr>
+	</table>
 	
 </BODY>
 </HTML> 
