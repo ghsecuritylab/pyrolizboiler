@@ -1,8 +1,44 @@
 <HTML>
 <HEAD>
- <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" >
+ <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" >
  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
  <TITLE>PyrolizBoiler</TITLE>
+	<script>
+		function submitForm(key, value)
+		{
+			var rqst = new XMLHttpRequest();
+			rqst.open("POST", "/", true);
+			
+			var data = new FormData();
+			data.append(key, value);
+			
+			rqst.send(data);
+		};
+		function setLed(elem)
+		{
+			/*
+			var filename = "/leds.cgi"
+			filename += "?"
+			filename += elem.name
+			filename += "="
+			filename += elem.value
+			
+			var rqst = new XMLHttpRequest();
+			rqst.open("GET", filename, true);
+			rqst.send();
+			*/
+			
+			var rqst = new XMLHttpRequest();
+			var data = new FormData();
+			
+			data.append(elem.name, elem.value);
+			
+			console.log("name:  " + elem.name + "value: " + elem.value);
+			
+			rqst.open("POST", "/leds.cgi", true);
+			rqst.send(data);
+		}
+	</script>
 </HEAD>
 <BODY>
 <H2>My Device - by S.D.</H2>
@@ -12,9 +48,9 @@
 <tr>
 <td>
 <B><font color="green">LED1 ON</font></B>
-<FORM method="get" action="/leds.cgi" >
-<INPUT type="HIDDEN" name="led1" value="1" size=2>
-<INPUT type="submit" value="LED1 ON"> </FORM>
+
+<INPUT type="button" name="led1" value="1" size=2 onclick="setLed(this)">
+
 </td>
 <td>
 <B><font color="red">LED2 ON</font></B>
@@ -62,5 +98,9 @@
 </td>
 </tr>
 </table>
+	<div width="350">
+			<input type="range" min="0" max="180" name="pwm1" oninput="submitForm(this.name, this.value)">
+	</div>
+	
 </BODY>
 </HTML> 

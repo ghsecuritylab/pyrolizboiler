@@ -32,7 +32,7 @@ static const char* cgi_handler(int iIndex,
             HAL_GPIO_WritePin(LED_ORANGE_GPIO_Port, LED_ORANGE_Pin, GPIO_PIN_RESET);
     }
 
-    return "/index.html";
+    return "";//"/index.html";
 }
 
 tCGI cgih = {"/leds.cgi", cgi_handler};
@@ -42,3 +42,32 @@ void initHttpCgiServer()
     http_set_cgi_handlers(&cgih, 1);
     httpd_init();
 }
+
+err_t httpd_post_begin(void *connection, const char *uri, const char *http_request,
+                       u16_t http_request_len, int content_len, char *response_uri,
+                       u16_t response_uri_len, u8_t *post_auto_wnd)
+{
+
+
+    return ERR_OK;
+}
+
+err_t httpd_post_receive_data(void *connection, struct pbuf *p)
+{
+    if (p != NULL)
+            pbuf_free(p);
+
+    return ERR_OK;
+}
+
+void httpd_post_finished(void *connection, char *response_uri, u16_t response_uri_len)
+{
+    struct http_state *hs = (struct http_state*)connection;
+
+    if (hs != NULL)
+        strncpy(response_uri, "/index.html", response_uri_len);
+}
+
+
+
+

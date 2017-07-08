@@ -147,7 +147,8 @@
 /* USER CODE BEGIN 1 */
 #define LWIP_TIMEVAL_PRIVATE        0
 #define LWIP_HTTPD_CGI              1
-#define LWIP_HTTPD_DYNAMIC_HEADERS  0
+#define LWIP_HTTPD_SUPPORT_POST     1
+#define LWIP_HTTPD_SUPPORT_11_KEEPALIVE 1
 /* USER CODE END 1 */
 
 #ifdef __cplusplus
