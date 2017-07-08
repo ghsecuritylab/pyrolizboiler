@@ -5,7 +5,7 @@
  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
  <TITLE>PyrolizBoiler</TITLE>
 	<script>
-		function ssetServo(serv, value)
+		function setServo(serv, value)
 		{
 			var filename = "/servo"
 			filename += "?"
@@ -82,9 +82,9 @@
 </tr>
 </table>
 	<div width="350">
-		<input type="range" min="0" max="180" name="pwm0" oninput="submitForm(this.name, this.value)"><p>
-		<input type="range" min="0" max="180" name="pwm1" oninput="submitForm(this.name, this.value)"><p>
-		<input type="range" min="0" max="180" name="pwm2" oninput="submitForm(this.name, this.value)"><p>
+		<input type="range" min="0" max="180" name="pwm0" oninput="setServo(this.name, this.value)"><p>
+		<input type="range" min="0" max="180" name="pwm1" oninput="setServo(this.name, this.value)"><p>
+		<input type="range" min="0" max="180" name="pwm2" oninput="setServo(this.name, this.value)"><p>
 	</div>
 	
 </BODY>

@@ -5,8 +5,9 @@
 #include "stm32f4xx_hal.h"
 #include "servo.h"
 
-tCGI *cgih;
-
+tCGI cgih[2];
+ServoHandler serv;
+//tCGI *cgih;
 ServoHandler * servh;
 extern TIM_HandleTypeDef htim4;
 
@@ -17,13 +18,13 @@ static const char* servo_cgi_handler(int iIndex,int iNumParams,char *pcParam[],c
 void initHttpCgiServer()
 {
 
-    servh = malloc(sizeof (ServoHandler));
+    servh = &serv; //malloc(sizeof (ServoHandler));
     servh->timh = &htim4;
     servh->enableGPIO = Servo_EN_GPIO_Port;
     servh->enablePin = Servo_EN_Pin;
     initServo(servh);
 
-    cgih = malloc(2*sizeof(tCGI));
+    //cgih = malloc(2*sizeof(tCGI));
     cgih[0].pcCGIName = "/leds";
     cgih[0].pfnCGIHandler = leds_cgi_handler;
     cgih[1].pcCGIName = "/servo";
