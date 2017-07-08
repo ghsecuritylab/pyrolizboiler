@@ -7,9 +7,12 @@
 #include "servo.h"
 #include "acpowerctrl.h"
 
-tCGI cgih[3];
-ServoHandler serv;
-//tCGI *cgih;
+
+#define CGI_HEADERS_NUM 3
+#define SSI_HEADERS_NUM 1
+
+tCGI *cgih;//[3];
+//ServoHandler serv;/tCGI *cgih;
 ServoHandler * servh;
 extern TIM_HandleTypeDef htim4;
 
@@ -21,13 +24,16 @@ static const char* acpower_cgi_handler(int iIndex,int iNumParams,char *pcParam[]
 void initHttpCgiServer()
 {
 
-    servh = &serv; //malloc(sizeof (ServoHandler));
+    servh = (ServoHandler*)malloc(sizeof(ServoHandler));
+    //if(servh==NULL) return;
     servh->timh = &htim4;
     servh->enableGPIO = Servo_EN_GPIO_Port;
     servh->enablePin = Servo_EN_Pin;
     initServo(servh);
 
-    //cgih = malloc(2*sizeof(tCGI));
+    cgih = (tCGI*)calloc(CGI_HEADERS_NUM, sizeof(tCGI));
+    //if(cgih==NULL) return;
+
     cgih[0].pcCGIName = "/leds";
     cgih[0].pfnCGIHandler = leds_cgi_handler;
     cgih[1].pcCGIName = "/servo";
@@ -35,7 +41,7 @@ void initHttpCgiServer()
     cgih[2].pcCGIName = "/relay";
     cgih[2].pfnCGIHandler = acpower_cgi_handler;
 
-    http_set_cgi_handlers((const tCGI*)&cgih, 3);
+    http_set_cgi_handlers(cgih, CGI_HEADERS_NUM);
     httpd_init();
 }
 

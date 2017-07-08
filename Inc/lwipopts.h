@@ -149,6 +149,7 @@
 #define LWIP_HTTPD_CGI              1
 #define LWIP_HTTPD_SUPPORT_POST     0
 #define LWIP_HTTPD_SUPPORT_11_KEEPALIVE 0
+#define LWIP_HTTPD_SSI 0
 /* USER CODE END 1 */
 
 #ifdef __cplusplus
