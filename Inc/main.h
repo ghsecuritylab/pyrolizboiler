@@ -68,8 +68,16 @@
 #define LED_RED_GPIO_Port GPIOD
 #define LED_BLUE_Pin GPIO_PIN_15
 #define LED_BLUE_GPIO_Port GPIOD
-#define CS_MAX31855_Pin GPIO_PIN_12
-#define CS_MAX31855_GPIO_Port GPIOC
+#define CS_MAX31855_Pin GPIO_PIN_0
+#define CS_MAX31855_GPIO_Port GPIOD
+#define Servo1_Pin GPIO_PIN_6
+#define Servo1_GPIO_Port GPIOB
+#define Servo2_Pin GPIO_PIN_7
+#define Servo2_GPIO_Port GPIOB
+#define Servo3_Pin GPIO_PIN_8
+#define Servo3_GPIO_Port GPIOB
+#define Servo_EN_Pin GPIO_PIN_9
+#define Servo_EN_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

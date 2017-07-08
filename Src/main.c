@@ -63,6 +63,8 @@
 SPI_HandleTypeDef hspi2;
 SPI_HandleTypeDef hspi3;
 
+TIM_HandleTypeDef htim4;
+
 osThreadId defaultTaskHandle;
 
 /* USER CODE BEGIN PV */
@@ -76,7 +78,11 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_SPI3_Init(void);
+static void MX_TIM4_Init(void);
 void StartDefaultTask(void const * argument);
+
+void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+                                
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -115,6 +121,7 @@ int main(void)
   MX_GPIO_Init();
   MX_SPI2_Init();
   MX_SPI3_Init();
+  MX_TIM4_Init();
 
   /* USER CODE BEGIN 2 */
     max_tc_init();
@@ -265,6 +272,65 @@ static void MX_SPI3_Init(void)
 
 }
 
+/* TIM4 init function */
+static void MX_TIM4_Init(void)
+{
+
+  TIM_ClockConfigTypeDef sClockSourceConfig;
+  TIM_MasterConfigTypeDef sMasterConfig;
+  TIM_OC_InitTypeDef sConfigOC;
+
+  htim4.Instance = TIM4;
+  htim4.Init.Prescaler = 84;
+  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim4.Init.Period = 20000;
+  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  if (HAL_TIM_PWM_Init(&htim4) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 1500;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  HAL_TIM_MspPostInit(&htim4);
+
+}
+
 /** Configure pins as 
         * Analog 
         * Input 
@@ -288,10 +354,11 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(DISPLAY_CS_GPIO_Port, DISPLAY_CS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, LED_GREEN_Pin|LED_ORANGE_Pin|LED_RED_Pin|LED_BLUE_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, LED_GREEN_Pin|LED_ORANGE_Pin|LED_RED_Pin|LED_BLUE_Pin 
+                          |CS_MAX31855_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(CS_MAX31855_GPIO_Port, CS_MAX31855_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(Servo_EN_GPIO_Port, Servo_EN_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : OneWire0_Pin */
   GPIO_InitStruct.Pin = OneWire0_Pin;
@@ -299,12 +366,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(OneWire0_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : DISPLAY_CS_Pin CS_MAX31855_Pin */
-  GPIO_InitStruct.Pin = DISPLAY_CS_Pin|CS_MAX31855_Pin;
+  /*Configure GPIO pin : DISPLAY_CS_Pin */
+  GPIO_InitStruct.Pin = DISPLAY_CS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  HAL_GPIO_Init(DISPLAY_CS_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LED_GREEN_Pin LED_ORANGE_Pin LED_RED_Pin LED_BLUE_Pin */
   GPIO_InitStruct.Pin = LED_GREEN_Pin|LED_ORANGE_Pin|LED_RED_Pin|LED_BLUE_Pin;
@@ -312,6 +379,20 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : CS_MAX31855_Pin */
+  GPIO_InitStruct.Pin = CS_MAX31855_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(CS_MAX31855_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : Servo_EN_Pin */
+  GPIO_InitStruct.Pin = Servo_EN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(Servo_EN_GPIO_Port, &GPIO_InitStruct);
 
 }
 

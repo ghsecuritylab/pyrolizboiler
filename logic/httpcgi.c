@@ -18,7 +18,7 @@ void initHttpCgiServer()
     cgih[2].pcCGIName = "/servo";
     cgih[2].pfnCGIHandler = servo_cgi_handler;
 
-    http_set_cgi_handlers(&cgih, 1);
+    http_set_cgi_handlers(&cgih, sizeof(cgih));
     httpd_init();
 }
 
