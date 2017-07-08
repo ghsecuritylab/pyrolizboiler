@@ -30,7 +30,7 @@ void initHttpCgiServer()
     cgih[1].pcCGIName = "/servo";
     cgih[1].pfnCGIHandler = servo_cgi_handler;
 
-    http_set_cgi_handlers((const tCGI*)&cgih, sizeof(cgih));
+    http_set_cgi_handlers((const tCGI*)&cgih, 2);
     httpd_init();
 }
 
