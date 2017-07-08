@@ -58,7 +58,7 @@ void setServo(ServoHandler *servoh, uint8_t num, uint8_t degree)
 
     osMutexWait(servoh->mutex, osWaitForever);
 
-    __HAL_TIM_SET_COMPARE(servoh->timh,num*4,degreeToPulse(degree));
+    __HAL_TIM_SET_COMPARE(servoh->timh,chanToHalChan(num),degreeToPulse(degree));
     servosOn(servoh);
     osTimerStart(servoh->timer, TIME_SERVO_POWERON_MS);
 

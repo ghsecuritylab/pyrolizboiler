@@ -5,20 +5,22 @@
  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
  <TITLE>PyrolizBoiler</TITLE>
 	<script>
-		function submitForm(key, value)
+		function ssetServo(serv, value)
 		{
+			var filename = "/servo"
+			filename += "?"
+			filename += serv
+			filename += "="
+			filename += value
+			
 			var rqst = new XMLHttpRequest();
-			rqst.open("POST", "/", true);
-			
-			var data = new FormData();
-			data.append(key, value);
-			
-			rqst.send(data);
+			rqst.open("GET", filename, true);
+			rqst.send();
 		};
 		function setLed(elem)
 		{
 			
-			var filename = "/leds.cgi"
+			var filename = "/leds"
 			filename += "?"
 			filename += elem.name
 			filename += "="
@@ -80,7 +82,9 @@
 </tr>
 </table>
 	<div width="350">
-			<input type="range" min="0" max="180" name="pwm1" oninput="submitForm(this.name, this.value)">
+		<input type="range" min="0" max="180" name="pwm0" oninput="submitForm(this.name, this.value)"><p>
+		<input type="range" min="0" max="180" name="pwm1" oninput="submitForm(this.name, this.value)"><p>
+		<input type="range" min="0" max="180" name="pwm2" oninput="submitForm(this.name, this.value)"><p>
 	</div>
 	
 </BODY>

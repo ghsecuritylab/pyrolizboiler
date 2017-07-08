@@ -3,8 +3,12 @@
 #include "string.h"
 #include "main.h"
 #include "stm32f4xx_hal.h"
+#include "servo.h"
 
 tCGI *cgih;
+
+ServoHandler * servh;
+extern TIM_HandleTypeDef htim4;
 
 static const char* leds_cgi_handler(int iIndex,int iNumParams,char *pcParam[],char *pcValue[]);
 static const char* servo_cgi_handler(int iIndex,int iNumParams,char *pcParam[],char *pcValue[]);
@@ -12,21 +16,28 @@ static const char* servo_cgi_handler(int iIndex,int iNumParams,char *pcParam[],c
 
 void initHttpCgiServer()
 {
-    cgih = malloc(2*sizeof(tCGI));
-    cgih[1].pcCGIName = "/leds";
-    cgih[1].pfnCGIHandler = leds_cgi_handler;
-    cgih[2].pcCGIName = "/servo";
-    cgih[2].pfnCGIHandler = servo_cgi_handler;
 
-    http_set_cgi_handlers(&cgih, sizeof(cgih));
+    servh = malloc(sizeof (ServoHandler));
+    servh->timh = &htim4;
+    servh->enableGPIO = Servo_EN_GPIO_Port;
+    servh->enablePin = Servo_EN_Pin;
+    initServo(servh);
+
+    cgih = malloc(2*sizeof(tCGI));
+    cgih[0].pcCGIName = "/leds";
+    cgih[0].pfnCGIHandler = leds_cgi_handler;
+    cgih[1].pcCGIName = "/servo";
+    cgih[1].pfnCGIHandler = servo_cgi_handler;
+
+    http_set_cgi_handlers((const tCGI*)&cgih, sizeof(cgih));
     httpd_init();
 }
 
 
 static const char* leds_cgi_handler(int iIndex,
-                               int iNumParams,
-                               char *pcParam[],
-                               char *pcValue[])
+                                    int iNumParams,
+                                    char *pcParam[],
+                                    char *pcValue[])
 {
     for(uint8_t i = 0; i<iNumParams; i++)
     {
@@ -52,14 +63,16 @@ static const char* leds_cgi_handler(int iIndex,
 }
 
 static const char* servo_cgi_handler(int iIndex,
-                               int iNumParams,
-                               char *pcParam[],
-                               char *pcValue[])
+                                     int iNumParams,
+                                     char *pcParam[],
+                                     char *pcValue[])
 {
+    int num, val;
     for(uint8_t i = 0; i<iNumParams; i++)
-    {
+        if(sscanf(pcParam[i], "pwm%d", &num))
+            if(sscanf(pcValue[i], "%d", &val))
+                setServo(servh, num, val);
 
-    }
     return "";
 }
 
