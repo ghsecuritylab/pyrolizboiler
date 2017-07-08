@@ -3,9 +3,11 @@
 #include "string.h"
 #include "main.h"
 #include "stm32f4xx_hal.h"
-#include "servo.h"
 
-tCGI cgih[2];
+#include "servo.h"
+#include "acpowerctrl.h"
+
+tCGI cgih[3];
 ServoHandler serv;
 //tCGI *cgih;
 ServoHandler * servh;
@@ -13,6 +15,7 @@ extern TIM_HandleTypeDef htim4;
 
 static const char* leds_cgi_handler(int iIndex,int iNumParams,char *pcParam[],char *pcValue[]);
 static const char* servo_cgi_handler(int iIndex,int iNumParams,char *pcParam[],char *pcValue[]);
+static const char* acpower_cgi_handler(int iIndex,int iNumParams,char *pcParam[],char *pcValue[]);
 
 
 void initHttpCgiServer()
@@ -29,8 +32,10 @@ void initHttpCgiServer()
     cgih[0].pfnCGIHandler = leds_cgi_handler;
     cgih[1].pcCGIName = "/servo";
     cgih[1].pfnCGIHandler = servo_cgi_handler;
+    cgih[2].pcCGIName = "/relay";
+    cgih[2].pfnCGIHandler = acpower_cgi_handler;
 
-    http_set_cgi_handlers((const tCGI*)&cgih, 2);
+    http_set_cgi_handlers((const tCGI*)&cgih, 3);
     httpd_init();
 }
 
@@ -77,4 +82,17 @@ static const char* servo_cgi_handler(int iIndex,
     return "";
 }
 
+static const char* acpower_cgi_handler(int iIndex,
+                                       int iNumParams,
+                                       char *pcParam[],
+                                       char *pcValue[])
+{
+    int num; char b[8];
+    for(uint8_t i = 0; i<iNumParams; i++)
+        if(sscanf(pcParam[i], "relay%d", &num))
+            setRelay(num, sscanf(pcValue[i], "%[TtRrUuEe]", b));
+
+
+    return "";
+}
 
