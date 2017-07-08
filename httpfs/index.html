@@ -5,11 +5,12 @@
  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
  <TITLE>PyrolizBoiler</TITLE>
 	<script>
-		function setServo(serv, value)
+		function httpGet(file, key, value)
 		{
-			var filename = "/servo"
+			var filename = "/" 
+			filename += file
 			filename += "?"
-			filename += serv
+			filename += key
 			filename += "="
 			filename += value
 			
@@ -17,9 +18,10 @@
 			rqst.open("GET", filename, true);
 			rqst.send();
 		};
-		function setLed(elem)
-		{
-			
+		function setServo(serv, value){ httpGet("servo", serv, value);};
+		function setLed(elem) {httpGet("leds", elem.name, elem.value);};
+		
+		/*{			
 			var filename = "/leds"
 			filename += "?"
 			filename += elem.name
@@ -31,7 +33,7 @@
 			rqst.send();
 			
 			
-			/*var rqst = new XMLHttpRequest();
+			var rqst = new XMLHttpRequest();
 			var data = new FormData();
 			
 			data.append(elem.name, elem.value);
@@ -39,8 +41,8 @@
 			console.log("name:  " + elem.name + "  value: " + elem.value);
 			
 			rqst.open("POST", "/leds.cgi", true);
-			rqst.send(data);*/
-		}
+			rqst.send(data);
+		}*/
 	</script>
 </HEAD>
 <BODY>
