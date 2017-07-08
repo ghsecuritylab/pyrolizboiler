@@ -4,13 +4,30 @@
 #include "main.h"
 #include "stm32f4xx_hal.h"
 
-static const char* cgi_handler(int iIndex,
+tCGI *cgih;
+
+static const char* leds_cgi_handler(int iIndex,int iNumParams,char *pcParam[],char *pcValue[]);
+static const char* servo_cgi_handler(int iIndex,int iNumParams,char *pcParam[],char *pcValue[]);
+
+
+void initHttpCgiServer()
+{
+    cgih = malloc(2*sizeof(tCGI));
+    cgih[1].pcCGIName = "/leds";
+    cgih[1].pfnCGIHandler = leds_cgi_handler;
+    cgih[2].pcCGIName = "/servo";
+    cgih[2].pfnCGIHandler = servo_cgi_handler;
+
+    http_set_cgi_handlers(&cgih, 1);
+    httpd_init();
+}
+
+
+static const char* leds_cgi_handler(int iIndex,
                                int iNumParams,
                                char *pcParam[],
                                char *pcValue[])
 {
-    if(iIndex!=0) return "/index.html";
-
     for(uint8_t i = 0; i<iNumParams; i++)
     {
 
@@ -31,43 +48,19 @@ static const char* cgi_handler(int iIndex,
         else if(0==strcmp(pcParam[i], "led40"))
             HAL_GPIO_WritePin(LED_ORANGE_GPIO_Port, LED_ORANGE_Pin, GPIO_PIN_RESET);
     }
-
     return "";//"/index.html";
 }
 
-tCGI cgih = {"/leds.cgi", cgi_handler};
-
-void initHttpCgiServer()
+static const char* servo_cgi_handler(int iIndex,
+                               int iNumParams,
+                               char *pcParam[],
+                               char *pcValue[])
 {
-    http_set_cgi_handlers(&cgih, 1);
-    httpd_init();
+    for(uint8_t i = 0; i<iNumParams; i++)
+    {
+
+    }
+    return "";
 }
-
-err_t httpd_post_begin(void *connection, const char *uri, const char *http_request,
-                       u16_t http_request_len, int content_len, char *response_uri,
-                       u16_t response_uri_len, u8_t *post_auto_wnd)
-{
-
-
-    return ERR_OK;
-}
-
-err_t httpd_post_receive_data(void *connection, struct pbuf *p)
-{
-    if (p != NULL)
-            pbuf_free(p);
-
-    return ERR_OK;
-}
-
-void httpd_post_finished(void *connection, char *response_uri, u16_t response_uri_len)
-{
-    struct http_state *hs = (struct http_state*)connection;
-
-    if (hs != NULL)
-        strncpy(response_uri, "/index.html", response_uri_len);
-}
-
-
 
 

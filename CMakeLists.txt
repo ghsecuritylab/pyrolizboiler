@@ -146,7 +146,7 @@ file(GLOB_RECURSE fsdata_files RELATIVE ${CMAKE_SOURCE_DIR}/httpfs
     ${CMAKE_SOURCE_DIR}/httpfs/*)
 list(REMOVE_ITEM fsdata_files "fsdata.c")
 add_custom_target( fsdata
-    COMMAND ${CMAKE_SOURCE_DIR}/makefsdata -11
+    COMMAND ${CMAKE_SOURCE_DIR}/makefsdata
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/httpfs/
     COMMENT "Make HTTP filesystem from: ${fsdata_files}"
     BYPRODUCTS ${CMAKE_SOURCE_DIR}/httpfs/fsdata.c )
