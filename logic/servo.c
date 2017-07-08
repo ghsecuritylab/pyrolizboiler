@@ -18,10 +18,10 @@ static inline uint32_t chanToHalChan(uint8_t num)
     return num*4;
 }
 
-static void servoEnd(void const* h)
+void servoEnd(void const* h)
 {
-    ServoHandler *servoh = (ServoHandler*)h;
-    servosOff(servoh);
+    //servosOff(((ServoHandler*)h));
+    HAL_GPIO_WritePin(Servo_EN_GPIO_Port,Servo_EN_Pin, GPIO_PIN_RESET);
 }
 
 osMutexDef(servosAcces);
@@ -32,20 +32,22 @@ int initServo(ServoHandler *servoh)
     servoh->mutex = osMutexCreate(osMutex(servosAcces));
     if(servoh->mutex == NULL)
         return 0;
-    servoh->timer = osTimerCreate(osTimer(servosPower), osTimerOnce, (void *)servoh);
+    servoh->timer = osTimerCreate(osTimer(servosPower), osTimerOnce, servoh);
     if(servoh->timer == NULL)
         return 0;
 
-    HAL_TIM_Base_Start(servoh->timh);
-    HAL_TIM_PWM_Start(servoh->timh,TIM_CHANNEL_ALL);
+    HAL_TIM_PWM_Start(servoh->timh,TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start(servoh->timh,TIM_CHANNEL_2);
+    HAL_TIM_PWM_Start(servoh->timh,TIM_CHANNEL_3);
 
     return 1;
 }
 
 void stopServo(ServoHandler *servoh)
 {
-    HAL_TIM_PWM_Stop(servoh->timh,TIM_CHANNEL_ALL);
-    HAL_TIM_Base_Stop(servoh->timh);
+    HAL_TIM_PWM_Stop(servoh->timh,TIM_CHANNEL_3);
+    HAL_TIM_PWM_Stop(servoh->timh,TIM_CHANNEL_2);
+    HAL_TIM_PWM_Stop(servoh->timh,TIM_CHANNEL_1);
 
     osTimerDelete(servoh->timer);
     osMutexDelete(servoh->mutex);
@@ -63,5 +65,4 @@ void setServo(ServoHandler *servoh, uint8_t num, uint8_t degree)
     osTimerStart(servoh->timer, TIME_SERVO_POWERON_MS);
 
     osMutexRelease(servoh->mutex);
-
 }
