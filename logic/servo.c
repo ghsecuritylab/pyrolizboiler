@@ -8,7 +8,7 @@
 #define servosOn(handler) HAL_GPIO_WritePin(handler->enableGPIO,handler->enablePin,GPIO_PIN_SET)
 #define servosOff(handler) HAL_GPIO_WritePin(handler->enableGPIO,handler->enablePin,GPIO_PIN_RESET)
 
-static inline uint16_t degreeToPulse(u_int16_t deg)
+static inline uint16_t degreeToPulse(uint16_t deg)
 {
     return ((deg*1000)/180)+1000;
 }
