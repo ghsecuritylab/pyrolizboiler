@@ -281,7 +281,7 @@ static void MX_TIM4_Init(void)
     TIM_OC_InitTypeDef sConfigOC;
 
     htim4.Instance = TIM4;
-    htim4.Init.Prescaler = 84;
+    htim4.Init.Prescaler = 84; //todo: prescaler 83, period 19999
     htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
     htim4.Init.Period = 20000;
     htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -462,17 +462,17 @@ void StartDefaultTask(void const * argument)
     {
         i++;
 
-        uint8_t ret = 0;
-        if (TM_OneWire_First(&OW))
-            TM_OneWire_GetFullROM(&OW, DS_ROM);
-        if (TM_DS18B20_Is(DS_ROM))
-            /* Everything is done */
-            if (TM_DS18B20_AllDone(&OW))
-                /* Read temperature from device */
-                if (TM_DS18B20_Read(&OW, DS_ROM, &temp)){
-                    ret = 1;
-                    TM_DS18B20_StartAll(&OW);
-                }
+//        uint8_t ret = 0;
+//        if (TM_OneWire_First(&OW))
+//            TM_OneWire_GetFullROM(&OW, DS_ROM);
+//        if (TM_DS18B20_Is(DS_ROM))
+//            /* Everything is done */
+//            if (TM_DS18B20_AllDone(&OW))
+//                /* Read temperature from device */
+//                if (TM_DS18B20_Read(&OW, DS_ROM, &temp)){
+//                    ret = 1;
+//                    TM_DS18B20_StartAll(&OW);
+//                }
 
         char buff[45];
 
@@ -485,17 +485,17 @@ void StartDefaultTask(void const * argument)
         do
         {
 
-            u8g_SetFont(&u8g, u8g_font_6x10);//выбор шрифта
-            if (ret) {
-                sprintf(buff, "..:%X:%X", DS_ROM[1],DS_ROM[0]);
-                u8g_DrawStr(&u8g, 2, 12, buff);
-                sprintf(buff, "Temp: %ld,%02ld`C", (int32_t)temp, ((int32_t)(temp*100)%100));
-                u8g_DrawStr(&u8g, 40, 12, buff);
+//            u8g_SetFont(&u8g, u8g_font_6x10);//выбор шрифта
+//            if (ret) {
+//                sprintf(buff, "..:%X:%X", DS_ROM[1],DS_ROM[0]);
+//                u8g_DrawStr(&u8g, 2, 12, buff);
+//                sprintf(buff, "Temp: %ld,%02ld`C", (int32_t)temp, ((int32_t)(temp*100)%100));
+//                u8g_DrawStr(&u8g, 40, 12, buff);
 
-            }
-            else {
-                u8g_DrawStr(&u8g, 2, 12, "Nothing on line");;
-            }
+//            }
+//            else {
+//                u8g_DrawStr(&u8g, 2, 12, "Nothing on line");;
+//            }
 
 
             /*** fps counter ***/
