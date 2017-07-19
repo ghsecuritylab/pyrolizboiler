@@ -8,7 +8,7 @@
 #include "acpowerctrl.h"
 
 
-#define CGI_HEADERS_NUM 3
+#define CGI_HEADERS_NUM 4
 #define SSI_HEADERS_NUM 1
 
 tCGI *cgih;//[3];
@@ -19,6 +19,7 @@ extern TIM_HandleTypeDef htim4;
 static const char* leds_cgi_handler(int iIndex,int iNumParams,char *pcParam[],char *pcValue[]);
 static const char* servo_cgi_handler(int iIndex,int iNumParams,char *pcParam[],char *pcValue[]);
 static const char* acpower_cgi_handler(int iIndex,int iNumParams,char *pcParam[],char *pcValue[]);
+static const char* triac_cgi_handler(int iIndex,int iNumParams,char *pcParam[],char *pcValue[]);
 
 
 void initHttpCgiServer()
@@ -40,6 +41,8 @@ void initHttpCgiServer()
     cgih[1].pfnCGIHandler = servo_cgi_handler;
     cgih[2].pcCGIName = "/relay";
     cgih[2].pfnCGIHandler = acpower_cgi_handler;
+    cgih[3].pcCGIName = "/triac";
+    cgih[3].pfnCGIHandler = triac_cgi_handler;
 
     http_set_cgi_handlers(cgih, CGI_HEADERS_NUM);
     httpd_init();
@@ -99,6 +102,14 @@ static const char* acpower_cgi_handler(int iIndex,
             setRelay(num, sscanf(pcValue[i], "%[TtRrUuEe]", b));
 
 
+    return "";
+}
+
+static const char* triac_cgi_handler(int iIndex,int iNumParams,char *pcParam[],char *pcValue[])
+{
+    int val;
+    if(sscanf(pcValue[0], "%d", &val))
+        setTriac(val);
     return "";
 }
 

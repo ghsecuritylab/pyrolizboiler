@@ -6,6 +6,9 @@
 
 void setRelay(uint8_t num, bool state);
 
+void acInit();
+void setTriac(uint16_t val);
+
 
 
 

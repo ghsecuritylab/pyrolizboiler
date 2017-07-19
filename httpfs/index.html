@@ -23,6 +23,9 @@
 			httpGet("servo", serv, value);};
 		function setLed(elem) {httpGet("leds", elem.name, elem.value);};
 		function setRelay(num, stat) {httpGet("relay", num, stat);};
+		function setTriac(num, stat) {
+			document.getElementById(num).value = stat;
+			httpGet("triac", num, stat);};
 	</script>
 </HEAD>
 <BODY>
@@ -99,6 +102,11 @@
 			<td><input type="checkbox" onclick="setRelay('relay3', this.checked)"></td>
 		</tr>
 	</table>
-	
+		<td><b>Triac: </b></td>
+		<td><input type="range" min="0" max="10000" name="triac0" oninput="setTriac(this.name, this.value)"></td>
+		<td><textarea id="triac0" readOnly="true"></textarea></td>
+	<table>
+		
+	</table>
 </BODY>
 </HTML> 
