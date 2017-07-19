@@ -1,3 +1,6 @@
 .*
-*.user
 *.launch
+*.user
+fsdata.c
+httpfs/fsdata.c
+
